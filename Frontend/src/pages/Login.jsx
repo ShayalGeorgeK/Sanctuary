@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 const Login = () => {
 
   const[currentState,setCurrentState] = useState('Login');
-  const {token,setToken,backendUrl,navigate} = useContext(ShopContext)
+  const {token,setToken,backendUrl,navigate,setUserName} = useContext(ShopContext)
 
   const [name,setName] = useState('');
   const [password,setPassword] = useState('')
@@ -33,7 +33,9 @@ const Login = () => {
 
         if (response.data.success) {
           setToken(response.data.token)
+          setUserName(response.data.name)
           localStorage.setItem('token',response.data.token)
+          localStorage.setItem('userName',response.data.name)
         } else {
           toast.error(response.data.message)
         }
@@ -69,7 +71,7 @@ const Login = () => {
           : <p onClick={()=>setCurrentState('Login')} className='cursor-pointer'>Login Here</p>
         }
       </div>
-      <button className='bg-black text-white font-light px-8 py-2 mt-4'>{currentState === 'Login' ? 'Sign In' : 'Sign Up'}</button>
+      <button className='bg-black text-white font-light px-8 py-2 mt-4 cursor-pointer'>{currentState === 'Login' ? 'Sign In' : 'Sign Up'}</button>
     </form>
   )
 }
