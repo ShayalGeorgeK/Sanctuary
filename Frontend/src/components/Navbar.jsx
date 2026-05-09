@@ -1,10 +1,11 @@
 import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
+  const location = useLocation();
 
   const { setShowSearch, getCartCount, navigate, token, setToken, setCartItems, userName, setUserName } =
     useContext(ShopContext);
@@ -48,7 +49,14 @@ const Navbar = () => {
       </ul>
 
       <div className="flex items-center gap-6">
-        <img onClick={() => setShowSearch(true)} src={assets.search_icon} className="w-5 cursor-pointer" alt="" />
+        {location.pathname.includes("collection") && (
+          <img
+            onClick={() => setShowSearch(true)}
+            src={assets.search_icon}
+            className="w-5 cursor-pointer"
+            alt=""
+          />
+        )}
 
         {token && true ? (
           <div className="group relative">
@@ -60,7 +68,7 @@ const Navbar = () => {
             {token && (
               <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4">
                 <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
-                  {/* <p className='cursor-pointer hover:text-black'>My Profile</p> */}
+                  <p className="text-black">{userName}</p>
                   <p onClick={() => navigate("/orders")} className="cursor-pointer hover:text-black">
                     Orders
                   </p>

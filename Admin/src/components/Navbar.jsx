@@ -1,4 +1,4 @@
-import { assets } from '../assets/assets'
+import { assets } from "../assets/assets";
 
 const Navbar = ({ setToken }) => {
   return (
@@ -14,4 +14,4 @@ const Navbar = ({ setToken }) => {
   );
 };
 
-export default Navbar
+export default Navbar;
