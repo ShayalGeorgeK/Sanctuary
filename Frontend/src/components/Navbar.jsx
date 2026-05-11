@@ -5,6 +5,7 @@ import { ShopContext } from "../context/ShopContext";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const location = useLocation();
 
   const { setShowSearch, getCartCount, navigate, token, setToken, setCartItems, userName, setUserName } =
@@ -60,19 +61,19 @@ const Navbar = () => {
 
         {token && true ? (
           <div className="group relative">
-            <div className="w-7 h-7 rounded-full bg-black text-white font-sans flex items-center justify-center">
+            <div onClick={()=>setShowMenu(!showMenu)} className="w-7 h-7 rounded-full bg-black text-white font-sans flex items-center justify-center">
               <p className="text-md">{firstLetter}</p>
             </div>
             {/* Dropdown menu */}
 
             {token && (
-              <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4">
+              <div className={`absolute right-0 pt-4 z-20 ${showMenu?"block":"hidden"} md:hidden group-hover:md:block`}>
                 <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
                   <p className="text-black">{userName}</p>
-                  <p onClick={() => navigate("/orders")} className="cursor-pointer hover:text-black">
+                  <p onClick={() => {navigate("/orders"); setShowMenu(false);}} className="cursor-pointer hover:text-black">
                     Orders
                   </p>
-                  <p onClick={logout} className="cursor-pointer hover:text-black">
+                  <p onClick={()=>{logout(); setShowMenu(false);}} className="cursor-pointer hover:text-black">
                     Logout
                   </p>
                 </div>
