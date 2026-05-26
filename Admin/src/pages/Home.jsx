@@ -11,15 +11,15 @@ const Home = ({ token }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-2">Total Sales</h2>
-          <p className="text-2xl font-bold">$12,345</p>
+          <p className="text-2xl font-bold">₹2,12,345</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-2">Total Orders</h2>
-          <p className="text-2xl font-bold">123</p>
+          <p className="text-2xl font-bold">1673</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-2">Total Customers</h2>
-          <p className="text-2xl font-bold">45</p>
+          <p className="text-2xl font-bold">145</p>
         </div>
       </div>
 
