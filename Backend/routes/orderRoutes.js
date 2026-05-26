@@ -2,6 +2,7 @@ import express from "express";
 import adminAuth from "../middleware/adminAuth.js";
 import {
     allOrders,
+    getMonthlyOrders,
     placeOrder,
     placeOrderRazorpay,
     placeOrderStripe,
@@ -29,5 +30,8 @@ orderRouter.post("/userorders", authUser, userOrders);
 //verify payment
 orderRouter.post("/verifyStripe", authUser, verifyStripe);
 orderRouter.post("/verifyRazorpay", authUser, verifyRazorpay);
+
+//monthly orders for graph
+orderRouter.get("/monthly",getMonthlyOrders);
 
 export default orderRouter;

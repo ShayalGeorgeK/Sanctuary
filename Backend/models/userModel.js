@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
             required: true,
         },
         address: {
-            type:Object,
+            type: Object,
             default: {},
         },
         cartData: {
@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema(
         },
     },
     { minimize: false },
+    { timestamps: true },
 );
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);
 

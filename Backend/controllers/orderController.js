@@ -3,6 +3,7 @@ import userModel from "../models/userModel.js";
 import Stripe from "stripe";
 import razorpay from "razorpay";
 import productModel from "../models/productModel.js";
+import mongoose from "mongoose";
 
 //global variables
 const currency = "inr";
@@ -19,7 +20,7 @@ const checkProductStock = async (items) => {
         if (product.quantity < item.quantity) {
             throw new Error(`${product.name} only has ${product.quantity} items left`);
             return false;
-        }else {
+        } else {
             console.log(`${product.name} has enough stock`);
             return true;
         }
@@ -37,7 +38,7 @@ const updateProductStock = async (items) => {
         if (product.quantity < item.quantity) {
             throw new Error(`${product.name} only has ${product.quantity} items left`);
             return false;
-        }else {
+        } else {
             console.log(`${product.name} has enough stock`);
         }
 
@@ -84,7 +85,6 @@ const placeOrder = async (req, res) => {
             await userModel.findByIdAndUpdate(userId, { cartData: {} });
         }
 
-       
         res.json({ success: true, message: "Order Placed" });
     } catch (error) {
         console.log(error);
@@ -270,6 +270,57 @@ const updateStatus = async (req, res) => {
     }
 };
 
+//monthly order data for graph
+
+const getMonthlyOrders = async (req, res) => {
+    try {
+        const orders = await orderModel.aggregate([
+            {
+                $match: {
+                    createdAt: {
+                        $gte: new Date("2026-05-01"),
+                        $lte: new Date("2026-05-31"),
+                    },
+                },
+            },
+
+            {
+                $group: {
+                    _id: { $dayOfMonth: "$createdAt" },
+
+                    orders: { $sum: 1 },
+                },
+            },
+
+            {
+                $sort: { _id: 1 },
+            },
+        ]);
+
+        const formatted = orders.map((item) => ({
+            day: item._id,
+            orders: item.orders,
+        }));
+        const daysInMonth = 31;
+
+        const fullData = [];
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const found = formatted.find((item) => item.day === day);
+
+            fullData.push({
+                day,
+                orders: found ? found.orders : 0,
+            });
+        }
+
+        res.json(fullData);
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false });
+    }
+};
+
 export {
     placeOrder,
     placeOrderStripe,
@@ -279,4 +330,5 @@ export {
     allOrders,
     userOrders,
     updateStatus,
+    getMonthlyOrders,
 };
