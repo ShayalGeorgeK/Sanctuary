@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { backendUrl } from "../App";
 
 import {
   Chart as ChartJS,
@@ -17,7 +18,7 @@ import { Line } from "react-chartjs-2";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend, Title);
 
-const OrdersAreaChart = (token) => {
+const OrdersAreaChart = ({ token }) => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
@@ -26,9 +27,7 @@ const OrdersAreaChart = (token) => {
 
   const fetchOrdersData = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/api/order/monthly");
-      console.log(response);
-
+      const response = await axios.get(backendUrl + "/api/order/monthly", { headers: { token } });
       setChartData(response.data);
     } catch (error) {
       console.log(error);

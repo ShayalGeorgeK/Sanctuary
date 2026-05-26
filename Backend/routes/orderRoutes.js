@@ -32,6 +32,6 @@ orderRouter.post("/verifyStripe", authUser, verifyStripe);
 orderRouter.post("/verifyRazorpay", authUser, verifyRazorpay);
 
 //monthly orders for graph
-orderRouter.get("/monthly",getMonthlyOrders);
+orderRouter.get("/monthly", adminAuth, getMonthlyOrders);
 
 export default orderRouter;
