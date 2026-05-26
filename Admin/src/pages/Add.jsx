@@ -17,6 +17,7 @@ const Add = ({ token }) => {
   const [subCategory, setSubCategory] = useState("Topwear");
   const [bestseller, setBestseller] = useState(false);
   const [sizes, setSizes] = useState([]);
+  const [quantity, setQuantity] = useState("");
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -31,7 +32,7 @@ const Add = ({ token }) => {
       formData.append("subCategory", subCategory);
       formData.append("bestseller", bestseller);
       formData.append("sizes", JSON.stringify(sizes));
-
+      formData.append("quantity", quantity);
       image1 && formData.append("image1", image1);
       image2 && formData.append("image2", image2);
       image3 && formData.append("image3", image3);
@@ -48,6 +49,7 @@ const Add = ({ token }) => {
         setImage3(false);
         setImage4(false);
         setPrice("");
+        setQuantity(0);
       } else {
         toast.error(response.data.message);
       }
@@ -142,7 +144,22 @@ const Add = ({ token }) => {
             required
           />
         </div>
+
+        <div>
+          <p className="mb-2">Product Quantity</p>
+          <input
+            onChange={(e) => setQuantity(e.target.value)}
+            value={quantity}
+            className="w-full px-3 py-2 sm:w-37 border border-gray-400"
+            type="number"
+            placeholder="Enter Quantity"
+            required
+          />
+        </div>
+
       </div>
+
+      
 
       <div>
         <p className="mb-2">Product Sizes</p>

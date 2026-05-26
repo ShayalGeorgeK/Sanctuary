@@ -66,6 +66,7 @@ const Cart = () => {
                 type="number"
                 min={1}
                 defaultValue={item.quantity}
+                readOnly
               />
               <img
                 onClick={() => updateQuantity(item._id, item.size, 0)}

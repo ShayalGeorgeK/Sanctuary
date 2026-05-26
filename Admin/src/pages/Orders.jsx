@@ -7,6 +7,13 @@ import { assets } from "../assets/assets";
 
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
+
+  const ordersPerPage = 4;
+  const startIndex = (page - 1) * ordersPerPage;
+  const endIndex = startIndex + ordersPerPage;
+  const currentOrders = orders.slice(startIndex, endIndex);
 
   const fetchAllOrders = async () => {
     if (!token) {
@@ -17,6 +24,7 @@ const Orders = ({ token }) => {
       const response = await axios.post(backendUrl + "/api/order/list", {}, { headers: { token } });
       if (response.data.success) {
         setOrders(response.data.orders.reverse());
+        setPages(Math.ceil(response.data.orders.length / ordersPerPage));
       } else {
         toast.error(response.data.message);
       }
@@ -34,6 +42,7 @@ const Orders = ({ token }) => {
         { headers: { token } },
       );
       if (response.data.success) {
+        toast.success(response.data.message);
         await fetchAllOrders();
       } else {
         toast.error(response.data.message);
@@ -47,12 +56,28 @@ const Orders = ({ token }) => {
   useEffect(() => {
     fetchAllOrders();
   }, [token]);
+  useEffect(() => {    
+    setPage(1);
+  }, [orders]);
 
   return (
     <div>
-      <h3>Order Page</h3>
+      <h3>Orders Page</h3>
+
+      <div className="flex flex-wrap items-center gap-2 mt-6">
+        {[...Array(pages).keys()].map((p) => (
+          <button
+            key={p}
+            onClick={() => setPage(p + 1)}
+            className={`mb-2 w-7 h-7 border flex items-center justify-center active:bg-gray-900 ${page === p + 1 ? "bg-black text-white" : "bg-white text-black"} cursor-pointer`}
+          >
+            {p + 1}
+          </button>
+        ))}
+      </div>
+
       <div>
-        {orders.map((order, index) => (
+        {currentOrders.map((order, index) => (
           <div
             className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start border-2 border-gray-200 p-5 md:p-8 my-3 md:my-4 text-xs sm:text-sm text-gray-700"
             key={index}

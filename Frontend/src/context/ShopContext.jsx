@@ -16,7 +16,21 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
   const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+      firstName: "",
+      lastName: "",
+      email: "",
+      street: "",
+      city: "",
+      state: "",
+      zipcode: "",
+      country: "",
+      phone: "",
+    });
 
   const addToCart = async (itemId, size) => {
     try {
@@ -38,6 +52,18 @@ const ShopContextProvider = (props) => {
         cartData[itemId][size] = 1;
       }
       setCartItems(cartData);
+
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product._id === itemId
+            ? {
+              ...product,
+              quantity: product.quantity - 1,
+              inStock: product.quantity - 1 > 0,
+            }
+            : product
+        )
+      );
 
       if (token) {
         try {
@@ -138,10 +164,40 @@ const ShopContextProvider = (props) => {
       toast.error(error.message);
     }
   };
+  const getAddress = async () => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/user/address/get",
+        { email: email },
+        { headers: { token } },
+      );
+      if (data.success) {
+        const address = data.address;
+        setFormData((data) => ({
+          ...data,
+          firstName: address.firstName,
+          lastName: address.lastName,
+          email: address.email,
+          street: address.street,
+          city: address.city,
+          state: address.state,
+          zipcode: address.zipcode,
+          country: address.country,
+          phone: address.phone,
+        }));
+      } else {
+        console.log(data.message);
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
 
   useEffect(() => {
     getProductsData();
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     getUserCart(token);
@@ -152,6 +208,7 @@ const ShopContextProvider = (props) => {
       setToken(localStorage.getItem("token"));
       getUserCart(localStorage.getItem("token"));
       setUserName(localStorage.getItem("userName"));
+      setEmail(localStorage.getItem("email"));
     }
   }, []);
 
@@ -171,10 +228,19 @@ const ShopContextProvider = (props) => {
     getCartAmount,
     navigate,
     backendUrl,
-    setToken,
     token,
+    setToken,
     userName,
     setUserName,
+    email,
+    setEmail,
+    page,
+    setPage,
+    pages,
+    setPages,
+    formData,
+    setFormData,
+    getAddress
   };
 
   return <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>;

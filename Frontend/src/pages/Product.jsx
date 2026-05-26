@@ -11,14 +11,13 @@ const Product = () => {
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
 
-  const fetchProductData = async () => {
-    products.map((item) => {
-      if (item._id === productId) {
+  const fetchProductData = async () => { 
+    const item = products.find((item) => item._id === productId);
+      if (item) {
         setProductData(item);
         setImage(item.image[0]);
         return null;
       }
-    });
   };
 
   useEffect(() => {
@@ -37,12 +36,12 @@ const Product = () => {
                 onClick={() => setImage(item)}
                 src={item}
                 key={index}
-                className="sm:mb-3 shrink-0 cursor-pointer"
+                className="sm:mb-3 shrink-0 cursor-pointer h-33"
               />
             ))}
           </div>
           <div className="w-full sm:w-[80%]">
-            <img className="w-full h-auto" src={image} alt="" />
+            <img className="w-full h-141.25" src={image} alt="" />
           </div>
         </div>
 
@@ -76,11 +75,23 @@ const Product = () => {
               ))}
             </div>
           </div>
+          <p className="font-medium mb-2">
+            Available :{" "}
+            <span
+              className={`${!productData.inStock || productData.quantity === 0 ? "text-red-500" : "text-green-500"}`}
+            >
+              {productData.quantity}
+            </span>
+          </p>
           <button
             onClick={() => addToCart(productData._id, size)}
-            className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700"
+            className={`px-8 py-3 text-sm text-white ${!productData.inStock || productData.quantity === 0
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-black active:bg-gray-700 cursor-pointer"
+              }`}
+            disabled={!productData.inStock || productData.quantity === 0}
           >
-            ADD TO CART
+            {!productData.inStock || productData.quantity === 0 ? "OUT OF STOCK" : "ADD TO CART "}
           </button>
           <hr className="mt-8 sm:w-4/5" />
           <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1">

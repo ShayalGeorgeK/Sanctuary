@@ -21,7 +21,7 @@ const loginUser = async (req, res) => {
 
         if (isMatch) {
             const token = createToken(user._id);
-            res.json({ success: true, token, name: user.name });
+            res.json({ success: true, token, name: user.name, email: user.email });
         } else {
             res.json({ success: false, message: "Invalid credentials" });
         }
@@ -44,11 +44,17 @@ const registerUser = async (req, res) => {
         if (!name) {
             return res.json({ success: false, message: "Please enter a username" });
         }
-        // validating email format and strong password
+        // validating username, email format and strong password
+        if (!validator.isAlpha(name.replace(/\s/g, ""))) {
+            return res.json({ success: false, message: "Please enter a valid username" });
+        }
+        if(name.replace(/\s/g, "").length < 5) {
+            return res.json({ success: false, message: "Username must be at least 5 characters long" });
+        }
         if (!validator.isEmail(email)) {
             return res.json({ success: false, message: "Please enter a valid email" });
         }
-        if (password.length < 8) {
+        if (!validator.isStrongPassword(password)) {
             return res.json({ success: false, message: "Please enter a strong password" });
         }
 
@@ -65,11 +71,44 @@ const registerUser = async (req, res) => {
 
         const token = createToken(user._id);
 
-        res.json({ success: true, token, name: user.name });
+        res.json({ success: true, token, name: user.name, email: user.email });
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message });
     }
+};
+
+//update user Address
+const updateAddress = async (req, res) => {
+    try {
+        const { email, address } = req.body;
+
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            return res.json({ success: false, message: "User does not exists" });
+        }           
+        user.address = address;
+        await user.save();
+        res.json({ success: true, message: "Address updated successfully" });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }       
+};
+
+//get user address
+const getAddress = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            return res.json({ success: false, message: "User does not exists" });
+        }
+        res.json({ success: true, address: user.address });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }   
 };
 
 // Admin Login
@@ -89,4 +128,4 @@ const adminLogin = async (req, res) => {
     }
 };
 
-export { loginUser, registerUser, adminLogin };
+export { loginUser, registerUser, adminLogin, updateAddress, getAddress };

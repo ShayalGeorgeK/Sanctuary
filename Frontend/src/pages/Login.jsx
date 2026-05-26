@@ -5,11 +5,10 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const [currentState, setCurrentState] = useState("Login");
-  const { token, setToken, backendUrl, navigate, setUserName } = useContext(ShopContext);
+  const { token, setToken, backendUrl, navigate, setUserName,email,setEmail } = useContext(ShopContext);
 
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -19,8 +18,10 @@ const Login = () => {
         if (response.data.success) {
           setToken(response.data.token);
           setUserName(response.data.name);
+          setEmail(response.data.email);
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("userName", response.data.name);
+          localStorage.setItem("email", response.data.email);
         } else {
           toast.error(response.data.message);
         }
@@ -30,8 +31,10 @@ const Login = () => {
         if (response.data.success) {
           setToken(response.data.token);
           setUserName(response.data.name);
+          setEmail(response.data.email);
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("userName", response.data.name);
+          localStorage.setItem("email", response.data.email);
         } else {
           toast.error(response.data.message);
         }

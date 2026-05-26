@@ -5,7 +5,7 @@ import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
 
 const Collection = () => {
-  const { products, search, showSearch } = useContext(ShopContext);
+  const { products, search, showSearch, page, pages, setPage, setPages } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
@@ -28,46 +28,57 @@ const Collection = () => {
     }
   };
 
-  const applyFilter = () => {
-    let produtsCopy = products.slice();
+  const applySortFilterPagination = () => {
+    let productsCopy = [...products];
 
-    if (showSearch && search) {
-      produtsCopy = produtsCopy.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
-    }
-
-    if (category.length > 0) {
-      produtsCopy = produtsCopy.filter((item) => category.includes(item.category));
-    }
-    if (subCategory.length > 0) {
-      produtsCopy = produtsCopy.filter((item) => subCategory.includes(item.subCategory));
-    }
-    setFilterProducts(produtsCopy);
-  };
-
-  const sortProduct = () => {
-    let fpCopy = filterProducts.slice();
-
+    // SORT FIRST
     switch (sortType) {
       case "low-high":
-        setFilterProducts(fpCopy.sort((a, b) => a.price - b.price));
+        productsCopy.sort((a, b) => a.price - b.price);
         break;
+
       case "high-low":
-        setFilterProducts(fpCopy.sort((a, b) => b.price - a.price));
+        productsCopy.sort((a, b) => b.price - a.price);
         break;
 
       default:
-        applyFilter();
         break;
     }
+
+    // SEARCH FILTER
+    if (showSearch && search) {
+      productsCopy = productsCopy.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
+    }
+
+    // CATEGORY FILTER
+    if (category.length > 0) {
+      productsCopy = productsCopy.filter((item) => category.includes(item.category));
+    }
+
+    // SUBCATEGORY FILTER
+    if (subCategory.length > 0) {
+      productsCopy = productsCopy.filter((item) => subCategory.includes(item.subCategory));
+    }
+
+    // PAGINATION
+    const itemsPerPage = 8;
+
+    const totalPages = Math.ceil(productsCopy.length / itemsPerPage);
+
+    setPages(totalPages);
+
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    setFilterProducts(productsCopy.slice(startIndex, endIndex));
   };
 
   useEffect(() => {
-    applyFilter();
-  }, [category, subCategory, search, showSearch, products]);
-
+    applySortFilterPagination();
+  }, [products, search, showSearch, category, subCategory, sortType, page]);
   useEffect(() => {
-    sortProduct();
-  }, [sortType]);
+    setPage(1);
+  }, [category, subCategory, search, showSearch, sortType]);
 
   return (
     <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
@@ -123,13 +134,24 @@ const Collection = () => {
           <Title text1={"ALL"} text2={"COLLECTIONS"} />
           {/* product sort */}
           <select onChange={(e) => setSortType(e.target.value)} className="border-2 border-gray-300 text-sm px-2">
-            <option value="relavent">Sort by: Relavent</option>
+            <option value="relevent">Sort by: Relevent</option>
             <option value="low-high">Sort by: Low to High</option>
             <option value="high-low">Sort by: High to Low</option>
           </select>
         </div>
+        <div className="flex flex-wrap items-center gap-2 mt-6">
+          {[...Array(pages).keys()].map((p) => (
+            <button
+              key={p}
+              onClick={() => setPage(p + 1)}
+              className={`m-1 w-7 h-7 border flex items-center justify-center active:bg-gray-900 ${page === p + 1 ? "bg-black text-white" : "bg-white text-black"} cursor-pointer`}
+            >
+              {p + 1}
+            </button>
+          ))}
+        </div>
         {/* map products */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6 mt-2">
           {filterProducts.map((item, index) => (
             <ProductItem key={index} id={item._id} image={item.image} name={item.name} price={item.price} />
           ))}

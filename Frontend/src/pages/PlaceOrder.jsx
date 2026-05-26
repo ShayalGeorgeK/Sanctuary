@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
 import { assets } from "../assets/assets";
@@ -8,19 +8,8 @@ import { toast } from "react-toastify";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("cod");
-  const { navigate, backendUrl, token, cartItems, setCartItems, getCartAmount, delivery_fee, products } =
+  const { navigate, backendUrl, token, cartItems, setCartItems, getCartAmount, delivery_fee, products, formData, setFormData, getAddress } =
     useContext(ShopContext);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    street: "",
-    city: "",
-    state: "",
-    zipcode: "",
-    country: "",
-    phone: "",
-  });
 
   const onChangeHandler = (event) => {
     const name = event.target.name;
@@ -134,6 +123,12 @@ const PlaceOrder = () => {
       toast.error(error.message);
     }
   };
+
+  useEffect(() => {
+    if (token) {
+      getAddress();
+    }
+  }, [token]);
 
   return (
     <form

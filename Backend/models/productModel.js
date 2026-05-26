@@ -29,6 +29,16 @@ const productSchema = new mongoose.Schema({
         type: Array,
         required: true,
     },
+    quantity: {
+      type: Number,
+      required: true,
+      min: 0,
+      default: 0,
+    },
+    inStock: {
+      type: Boolean,
+      default: true,
+    },
     bestseller: {
         type: Boolean,
     },

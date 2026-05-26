@@ -1,10 +1,15 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
+import validator from "validator";
+
+
+const validateProductName = /^[A-Z][a-zA-Z]{2}/;
+const validateProductDescription = /^[A-Z][a-zA-Z]{4}/;
 
 // add product
 const addProduct = async (req, res) => {
     try {
-        const { name, description, price, category, subCategory, sizes, bestseller } = req.body;
+        const { name, description, price, category, subCategory, sizes, bestseller, quantity} = req.body;
 
         const image1 = req.files.image1 && req.files.image1[0];
         const image2 = req.files.image2 && req.files.image2[0];
@@ -12,6 +17,32 @@ const addProduct = async (req, res) => {
         const image4 = req.files.image4 && req.files.image4[0];
 
         const images = [image1, image2, image3, image4].filter((item) => item !== undefined);
+        
+        // validating product name, description, quantity and images
+        if (images.length < 1) {
+            return res.json({ success: false, message: "Please upload at least 1 image" });
+        }
+        if (!validateProductName.test(name.replace(/\s/g, ""))) {
+            return res.json({ success: false, message: "Please enter a valid product name" });
+        }
+        if (name.replace(/\s/g, "").length < 5) {
+            return res.json({ success: false, message: "Product name must be at least 5 characters long" });
+        }
+        if (!validateProductDescription.test(description.replace(/\s/g, ""))) {
+            return res.json({ success: false, message: "Please enter a valid product description" });
+        }
+        if (description.length < 20) {
+            return res.json({ success: false, message: "Product description must be at least 20 characters long" });
+        }
+        if (!validator.isNumeric(quantity) || Number(quantity) < 0) {
+            return res.json({ success: false, message: "Please enter a valid quantity" });
+        }
+        if (!validator.isNumeric(price) || Number(price) <= 0) {
+            return res.json({ success: false, message: "Please enter a valid price" });
+        }
+        if (JSON.parse(sizes).length === 0) {
+            return res.json({ success: false, message: "Please enter at least 1 size" });
+        }
 
         let imagesUrl = await Promise.all(
             images.map(async (item) => {
@@ -30,6 +61,8 @@ const addProduct = async (req, res) => {
             subCategory,
             bestseller: bestseller === "true" ? true : false,
             sizes: JSON.parse(sizes),
+            quantity: Number(quantity),
+            inStock: Number(quantity) > 0,
             image: imagesUrl,
             date: Date.now(),
         };
