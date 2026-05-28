@@ -14,9 +14,24 @@ const port = process.env.PORT || 4000;
 connectDB();
 connectCloudinary();
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,   
+  process.env.ADMIN_URL,      
+];
+
 //middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow server-to-server calls (no origin) and listed origins
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
 
 //api endpoints
 app.use("/api/user", userRouter);
