@@ -274,12 +274,21 @@ const updateStatus = async (req, res) => {
 
 const getMonthlyOrders = async (req, res) => {
     try {
+        const startDate = new Date();
+        startDate.setDate(1);
+        startDate.setHours(0, 0, 0, 0);
+
+        const endDate = new Date();
+        endDate.setMonth(endDate.getMonth() + 1);
+        endDate.setDate(0);
+        endDate.setHours(23, 59, 59, 999);
+
         const orders = await orderModel.aggregate([
             {
                 $match: {
                     createdAt: {
-                        $gte: new Date("2026-05-01"),
-                        $lte: new Date("2026-05-31"),
+                        $gte: startDate,
+                        $lte: endDate,
                     },
                 },
             },
