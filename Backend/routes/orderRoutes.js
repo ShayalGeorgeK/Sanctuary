@@ -6,6 +6,7 @@ import {
     placeOrder,
     placeOrderRazorpay,
     placeOrderStripe,
+    totalSalesOrdersCustomers,
     updateStatus,
     userOrders,
     verifyRazorpay,
@@ -31,7 +32,8 @@ orderRouter.post("/userorders", authUser, userOrders);
 orderRouter.post("/verifyStripe", authUser, verifyStripe);
 orderRouter.post("/verifyRazorpay", authUser, verifyRazorpay);
 
-//monthly orders for graph 
+//for home page stats
 orderRouter.get("/monthly", getMonthlyOrders);
+orderRouter.post("/total", totalSalesOrdersCustomers);
 
 export default orderRouter;

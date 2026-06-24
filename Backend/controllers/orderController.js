@@ -330,6 +330,34 @@ const getMonthlyOrders = async (req, res) => {
     }
 };
 
+const totalSalesOrdersCustomers = async (req, res) => {
+    try {
+
+        const totalSales = await orderModel.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    totalSales: { $sum: "$amount" },
+                },
+            },
+        ]);
+
+        const totalOrders = await orderModel.countDocuments();
+
+        const totalCustomers = await userModel.countDocuments();
+
+        res.json({
+            success: true,
+            totalSales: totalSales[0]?.totalSales || 0,
+            totalOrders,
+            totalCustomers,
+        });
+        
+    } catch (error) {
+       console.log(error) 
+    }
+}
+
 export {
     placeOrder,
     placeOrderStripe,
@@ -340,4 +368,5 @@ export {
     userOrders,
     updateStatus,
     getMonthlyOrders,
+    totalSalesOrdersCustomers
 };
